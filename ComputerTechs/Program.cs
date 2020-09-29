@@ -1,14 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace ComputerTechs
 {
-  internal class Program
+  internal static class Program
   {
     public static void Main(string[] args)
     {
-      var data = CalculateSupportingFunction(10);
-      using (var writer = new StreamWriter("data.txt"))
+      var data = CalculateSupportingFunction(SpecificSupportingFunction, 10);
+      using (var writer = new StreamWriter($"{Environment.CurrentDirectory}/../../../Plotter/data.txt"))
       {
         for (var i = 0; i < data.GetLength(0); i++)
           writer.Write($"{data[i]}\n");
@@ -30,14 +32,14 @@ namespace ComputerTechs
       return double.NaN;
     }
 
-    private static double[] CalculateSupportingFunction(int n)
+    private static double[] CalculateSupportingFunction(Func<double[], double> func, int n)
     {
       var result = new double[n];
 
       var rand = new Random();
       for (var i = 0; i < n; i++)
       {
-        result[i] = SpecificSupportingFunction(new[]
+        result[i] = func(new[]
         {
           Math.Sin(rand.NextDouble()),
           Math.Cos(rand.NextDouble())
@@ -45,6 +47,10 @@ namespace ComputerTechs
       }
 
       return result;
+    }
+
+    private static void MatrixExponential()
+    {
     }
   }
 }
