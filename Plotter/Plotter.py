@@ -1,12 +1,17 @@
 import sys
 import matplotlib.pyplot as plt
 
-path = sys.argv[1]
-f = open(path, "r")
-data = f.read()
-f.close()
+if len(sys.argv) <= 1:
+    path = input("Enter file path: ")
+else:
+    path = sys.argv[1]
 
-data = [float(x) for x in data.replace(",", ".").split()]
-
-plt.plot(data)
-plt.show()
+if path != "":
+    f = open(path, "r")
+    data = f.read()
+    f.close()
+    
+    data = [float(x) for x in data.replace(",", ".").split()]
+    
+    plt.plot(data)
+    plt.show()
