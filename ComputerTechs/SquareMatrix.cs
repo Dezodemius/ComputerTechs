@@ -1,12 +1,18 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace ComputerTechs
 {
+  /// <summary>
+  /// Квадратная матрица.
+  /// </summary>
   public class SquareMatrix
   {
     #region Поля и свойства
 
+    /// <summary>
+    /// Размер матрицы.
+    /// </summary>
     public int Size { get; protected set; }
     
     public double[,] BasedArray { get; }
@@ -15,6 +21,12 @@ namespace ComputerTechs
 
     #region Операторы
 
+    /// <summary>
+    /// Оператор сложения между матрицами.
+    /// </summary>
+    /// <param name="a">Матрица слева.</param>
+    /// <param name="b">Матрица справа.</param>
+    /// <returns>Результирующая матрица.</returns>
     public static SquareMatrix operator +(SquareMatrix a, SquareMatrix b)
     {
       var n = a.Size;
@@ -30,6 +42,52 @@ namespace ComputerTechs
       return c;
     }
 
+    /// <summary>
+    /// Оператор умножения матриц.
+    /// </summary>
+    /// <param name="a">Матрица слева.</param>
+    /// <param name="b">Матрица справа.</param>
+    /// <returns>Результирующная матрица.</returns>
+    public static SquareMatrix operator *(SquareMatrix a, SquareMatrix b)
+    {
+      var c = new SquareMatrix(a.Size);
+      var n = a.Size;
+      for (var i = 0; i < n; i++) 
+      {
+        for (var j = 0; j < n; j++) 
+        {
+          c[i, j] = 0;
+          for (var k = 0; k < n; k++) 
+          {
+            c[i, j] += a[i, k] * b[k, j];
+          }
+        }
+      }
+
+      return c;
+    }
+
+    /// <summary>
+    /// Оператор умножения матрицы на вектор.
+    /// </summary>
+    /// <param name="a">Матрица.</param>
+    /// <param name="b">Вектор.</param>
+    /// <returns>Результирующий вектор.</returns>
+    public static double[] operator *(SquareMatrix a, double[] b)
+    {
+      var n = a.Size;
+      var c = new double[n];
+      for (var i = 0; i < n; i++) 
+      {
+        for (var j = 0; j < n; j++)
+        {
+          c[i] += a[i, j] * b[j];
+        }
+      }
+
+      return c;
+    }
+    
     #endregion
 
     #region Индексатор
@@ -72,9 +130,18 @@ namespace ComputerTechs
   /// </summary>
   public static class SquareMatrixExtensions
   {
+    /// <summary>
+    /// Получить собственные значения матрицы.
+    /// </summary>
+    /// <param name="matrix">Матрица.</param>
+    /// <returns>Массив, содержащий собственные значения.</returns>
+    /// <exception cref="ArgumentException">Возникает, если размер матрицы не равен двум.</exception>
     public static double[] GetEigenvalues(this SquareMatrix matrix)
     {
-      if (matrix.Size != 2)
+      if (matrix.Size == 1)
+        return new double[] { matrix[0, 0] };
+      
+      if (matrix.Size > 2)
         throw new ArgumentException("Матрица размера больше 2-х не поддерживаются");
       
       var eigenvalues = new double[matrix.Size];
@@ -91,6 +158,11 @@ namespace ComputerTechs
       return eigenvalues;
     }
 
+    /// <summary>
+    /// Получить собственный вектор.
+    /// </summary>
+    /// <param name="matrix">Матрица.</param>
+    /// <returns>Список собственных векторов.</returns>
     public static List<double[]> GetEigenvectors(this SquareMatrix matrix)
     {
       var eigenvectors = new List<double[]>(new [] {new double[2], new double[2] });
@@ -110,6 +182,11 @@ namespace ComputerTechs
       return eigenvectors;
     }
 
+    /// <summary>
+    /// Получить транспонированную матрицу.
+    /// </summary>
+    /// <param name="matrix">Исходная матрица.</param>
+    /// <returns>Транспонированая матрица.</returns>
     public static SquareMatrix GetTransposed(this SquareMatrix matrix)
     {
       var transposedMatrix = new SquareMatrix(matrix.Size);
@@ -124,6 +201,27 @@ namespace ComputerTechs
       return transposedMatrix;
     }
 
+    /// <summary>
+    /// Получить обратную матрицу.
+    /// </summary>
+    /// <param name="matrix">Исходная матрица.</param>
+    /// <returns>Обратная матрица.</returns>
+    public static SquareMatrix GetInverse(this SquareMatrix matrix)
+    {
+      var matrixDet = matrix.GetDeterminant();
+      var inverse = new SquareMatrix(matrix.Size)
+      {
+        [0, 0] = matrix[1, 1] / matrixDet, [0, 1] = - matrix[0, 1] / matrixDet, 
+        [1, 0] = - matrix[1, 0] / matrixDet, [1, 1] = matrix[0, 0] / matrixDet
+      };
+
+      return inverse;
+    }
+
+    /// <summary>
+    /// Вывести матрицу.
+    /// </summary>
+    /// <param name="matrix">Матрица.</param>
     public static void Print(this SquareMatrix matrix)
     {
       for (var i = 0; i < matrix.Size; i++)
@@ -134,6 +232,19 @@ namespace ComputerTechs
         }
         Console.WriteLine();
       }
+    }
+
+    /// <summary>
+    /// Получить определитель матрицы.
+    /// </summary>
+    /// <param name="matrix">Матрица.</param>
+    /// <returns>Значение определителя.</returns>
+    /// <exception cref="ArgumentException">Возникает, если размер матрицы не равен двум.</exception>
+    public static double GetDeterminant(this SquareMatrix matrix)
+    {
+      if (matrix.Size != 2)
+        throw new ArgumentException("Матрица размера больше 2-х не поддерживаются");
+      return matrix[0, 0] * matrix[1, 1] - matrix[0, 1] * matrix[1, 0];
     }
   }
   
