@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using Meta.Numerics.Matrices;
 
@@ -9,6 +9,59 @@ namespace ComputerTechs
   /// </summary>
   public static class SquareMatrixExtensions
   {
+    public static Func<double, SquareMatrix> GetMatrixExponentialFunc(this SquareMatrix matrix)
+    {
+      var jordanMatrix = matrix.GetJordanForm();
+      var eigenvalues = matrix.Eigenvalues();
+      
+      var l1 = eigenvalues[0].Re;
+      var l2 = eigenvalues[1].Re;
+      
+      if (!(l1 - l2).IsZero())
+      {
+        return t => { return new SquareMatrix(new [,]
+          {
+            { Math.Exp(l1 * t), jordanMatrix[0, 1] * t * Math.Exp(l1 * t) }, 
+            { 0.0, Math.Exp(l1 * t) }
+          });
+        };
+      }
+      
+      return t => { return new SquareMatrix(new [,]
+        {
+          { Math.Exp(l1 * t), 0.0 }, 
+          { 0.0, Math.Exp(l2 * t) }
+        });
+      };
+    }
+    
+    /// <summary>
+    /// Вывести все значения матрицы в окно консоли.
+    /// </summary>
+    /// <param name="matrix">Матрица.</param>
+    public static void Print(this SquareMatrix matrix)
+    {
+      for (var i = 0; i < matrix.Dimension; i++)
+      {
+        for (var j = 0; j < matrix.Dimension; j++)
+        {
+          Console.Write($"{matrix[i, j]}\t");
+        }
+        Console.WriteLine();
+      }
+    }
+
+    /// <summary>
+    /// Получить Жорданову форму матрицы.
+    /// </summary>
+    /// <param name="matrix">Матрица.</param>
+    /// <returns>Жорданова форма.</returns>
+    public static SquareMatrix GetJordanForm(this SquareMatrix matrix)
+    {
+      var H = matrix.GetEigenvectors();
+      return H.Inverse() * matrix * H;
+    }
+    
     /// <summary>
     /// Получить ранг матрицы.
     /// </summary>
@@ -55,7 +108,7 @@ namespace ComputerTechs
         {
           var possibleAttachedVectorEntries = GetRandomColumnVector(max, min);
           var possibleAttachedVector = new ColumnVector(possibleAttachedVectorEntries);
-          if ((originMatrix - eigenvalues[1].Re * identityMatrix).GetRank().IsZero())
+          if (!(originMatrix - eigenvalues[1].Re * identityMatrix).GetRank().IsZero())
           {
             var possibleEigenvector = (originMatrix - eigenvalues[1].Re * identityMatrix) * possibleAttachedVector;
             if (possibleEigenvector.OneNorm().IsZero()) 

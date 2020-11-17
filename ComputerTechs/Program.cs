@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Meta.Numerics.Matrices;
 
 namespace ComputerTechs
@@ -7,14 +7,18 @@ namespace ComputerTechs
   {
     public static void Main(string[] args)
     {
-      var entries = new [,]
+      var entries = new[,]
       {
-        {5.0, 0.0}, {0.0, 5.0}  
+        {1.0, -3.0}, {0.0, 2.0}
       };
-      
+
       var A = new SquareMatrix(entries);
+
       var S = A.GetEigenvectors();
-      var J = S.Inverse() * A * S;
+      S.Print();
+      var J = A.GetJordanForm();
+      J.Print();
+      A.GetMatrixExponentialFunc()(1.0).Print();
       Console.WriteLine(A.GetRank());
     }
 
