@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using Meta.Numerics.Matrices;
 
@@ -17,7 +17,6 @@ namespace ComputerTechs
     public static double GetRank(this SquareMatrix matrix)
     {
       var rank = 2;
-      
       var a = matrix[0, 0];
       var b = matrix[0, 1];
       var c = matrix[1, 0];
@@ -45,7 +44,7 @@ namespace ComputerTechs
       
       const double max = 1.0;
       const double min = 0.0;
-
+      
       // Собственные значения равны друг другу (одно собственное значение).
       if (!eigenvalues.All(v => (v - eigenvalues[0]).Re.IsZero()))
       {
@@ -65,20 +64,20 @@ namespace ComputerTechs
             {
               eigenvectors = new SquareMatrix(new [,]
               {
-                {possibleEigenvector[0], possibleAttachedVector[0]} , 
-                {possibleEigenvector[1], possibleAttachedVector[1]}
+                { possibleEigenvector[0], possibleAttachedVector[0] }, 
+                { possibleEigenvector[1], possibleAttachedVector[1] }
               });
               break;
             }
           }
           eigenvectors = new SquareMatrix(new [,]
           {
-            {1.0, 0.0} , 
-            {0.0, 1.0}
+            { 1.0, 0.0 }, 
+            { 0.0, 1.0 }
           });
           break;
         }
-
+      
         return eigenvectors;
       }
 
@@ -98,6 +97,5 @@ namespace ComputerTechs
       var y = random.NextDouble() * (max - min) + min;
       return new []{ x, y };
     }
-
   }
 }

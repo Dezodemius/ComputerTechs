@@ -1,7 +1,5 @@
-﻿using System;
-using System.Linq;
+using System;
 using Meta.Numerics.Matrices;
-using Complex = Meta.Numerics.Complex;
 
 namespace ComputerTechs
 {
