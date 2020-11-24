@@ -7,19 +7,24 @@ namespace ComputerTechs
   {
     public static void Main(string[] args)
     {
-      var entries = new[,]
-      {
-        {1.0, -3.0}, {0.0, 2.0}
-      };
-
-      var A = new SquareMatrix(entries);
-
-      var S = A.GetEigenvectors();
-      S.Print();
-      var J = A.GetJordanForm();
-      J.Print();
-      A.GetMatrixExponentialFunc()(1.0).Print();
-      Console.WriteLine(A.GetRank());
+      // var entries = new[,]
+      // {
+      //   {25.0, 17.0}, 
+      //   {-5.0, 1.0}
+      // };
+      //
+      // var A = new SquareMatrix(entries);
+      //
+      // var S = A.GetEigenvectors();
+      // // S.Print();
+      // var J = A.GetJordanForm();
+      // // J.Print();
+      // ().Print();
+      // var expJ = J.GetMatrixExponentialFunc()(1.0);
+      // expJ.Print();
+      //
+      // var expM = S * expJ * S.Inverse();
+      // expM.Print();
     }
 
     /// <summary>

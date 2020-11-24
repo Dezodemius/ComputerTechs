@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Meta.Numerics;
 using Meta.Numerics.Matrices;
 
 namespace ComputerTechs
@@ -17,11 +18,21 @@ namespace ComputerTechs
       var l1 = eigenvalues[0].Re;
       var l2 = eigenvalues[1].Re;
       
-      if (!(l1 - l2).IsZero())
+      // Если l1 и l2 разные. 
+      if ((l1 - l2).IsNotZero())
       {
         return t => { return new SquareMatrix(new [,]
           {
-            { Math.Exp(l1 * t), jordanMatrix[0, 1] * t * Math.Exp(l1 * t) }, 
+            { Math.Exp(l1 * t), 0.0 }, 
+            { 0.0, Math.Exp(l2 * t) }
+          });
+        };
+      }
+      if (matrix.GetGeometricMultiplicity(l1) == 2)
+      {
+        return t => { return new SquareMatrix(new [,]
+          {
+            { Math.Exp(l1 * t), 0.0 }, 
             { 0.0, Math.Exp(l1 * t) }
           });
         };
@@ -29,10 +40,10 @@ namespace ComputerTechs
       
       return t => { return new SquareMatrix(new [,]
         {
-          { Math.Exp(l1 * t), 0.0 }, 
-          { 0.0, Math.Exp(l2 * t) }
+          { Math.Exp(l1 * t), (t - 1) * Math.Exp(l1 * t) }, 
+          { 0.0, Math.Exp(l1 * t) }
         });
-      };
+      }; 
     }
     
     /// <summary>
@@ -49,6 +60,7 @@ namespace ComputerTechs
         }
         Console.WriteLine();
       }
+      Console.WriteLine();
     }
 
     /// <summary>
@@ -58,8 +70,8 @@ namespace ComputerTechs
     /// <returns>Жорданова форма.</returns>
     public static SquareMatrix GetJordanForm(this SquareMatrix matrix)
     {
-      var H = matrix.GetEigenvectors();
-      return H.Inverse() * matrix * H;
+      var jordanForm = matrix.GetEigenvectors();
+      return jordanForm.Inverse() * matrix * jordanForm;
     }
     
     /// <summary>
@@ -67,7 +79,7 @@ namespace ComputerTechs
     /// </summary>
     /// <param name="matrix">Матрица.</param>
     /// <returns>Ранг.</returns>
-    public static double GetRank(this SquareMatrix matrix)
+    public static int GetRank(this SquareMatrix matrix)
     {
       var rank = 2;
       var a = matrix[0, 0];
@@ -98,17 +110,28 @@ namespace ComputerTechs
       const double max = 1.0;
       const double min = 0.0;
       
-      // Собственные значения равны друг другу (одно собственное значение).
-      if (!eigenvalues.All(v => (v - eigenvalues[0]).Re.IsZero()))
-      {
-        SquareMatrix eigenvectors;
-        var identityMatrix = SquareMatrixHelper.GetIdentityMatrix(originMatrix.Dimension);
+      SquareMatrix eigenvectors = new SquareMatrix(originMatrix.Dimension);
+      var identityMatrix = SquareMatrixHelper.GetIdentityMatrix(originMatrix.Dimension);
       
+      // Два различных собственных значения.
+      if (!(eigenvalues[0] - eigenvalues[1]).Re.IsZero())
+      {
+        var eigenSol1 = originMatrix - eigenvalues[0].Re * identityMatrix;
+        var eigenSol2 = originMatrix - eigenvalues[1].Re * identityMatrix;
+        
+        eigenvectors = new SquareMatrix(new [,]
+        {
+          { eigenSol1[0, 1], eigenSol2[0, 1] },
+          { eigenSol1[0, 0], eigenSol2[0, 0] }
+        });
+      }
+      else if ((eigenvalues[0] - eigenvalues[1]).Re.IsZero())
+      {
         while (true)
         {
           var possibleAttachedVectorEntries = GetRandomColumnVector(max, min);
           var possibleAttachedVector = new ColumnVector(possibleAttachedVectorEntries);
-          if (!(originMatrix - eigenvalues[1].Re * identityMatrix).GetRank().IsZero())
+          if ((originMatrix - eigenvalues[1].Re * identityMatrix).GetRank() != 0)
           {
             var possibleEigenvector = (originMatrix - eigenvalues[1].Re * identityMatrix) * possibleAttachedVector;
             if (possibleEigenvector.OneNorm().IsZero()) 
@@ -130,11 +153,21 @@ namespace ComputerTechs
           });
           break;
         }
-      
-        return eigenvectors;
       }
 
-      return new SquareMatrix(new[,]{{1.0, 0.0},{0.0, 1.0}});
+      return eigenvectors;
+    }
+
+    /// <summary>
+    /// Получить геометрическую кратность собственного значения матрицы.
+    /// </summary>
+    /// <param name="originMatrix">Исходная матрица.</param>
+    /// <param name="eigenvalue">Собственное значение.</param>
+    /// <returns></returns>
+    private static int GetGeometricMultiplicity(this SquareMatrix originMatrix, double eigenvalue)
+    {
+      var identityMatrix = SquareMatrixHelper.GetIdentityMatrix(originMatrix.Dimension);
+      return originMatrix.Dimension - (originMatrix - eigenvalue * identityMatrix).GetRank();
     }
 
     /// <summary>

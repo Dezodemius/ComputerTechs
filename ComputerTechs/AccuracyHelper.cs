@@ -25,5 +25,12 @@ namespace ComputerTechs
     {
       return Math.Abs(number - 0.0) <= eps;
     }
+
+    /// <summary>
+    /// Метод, обратный методу IsZero.
+    /// </summary>
+    /// <param name="number">Проверяемое число.</param>
+    /// <returns><c>True</c>, если число не 0.0.</returns>
+    public static bool IsNotZero(this double number) => !IsZero(number);
   }
 }
