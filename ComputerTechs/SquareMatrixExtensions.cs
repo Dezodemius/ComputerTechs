@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using Meta.Numerics;
 using Meta.Numerics.Matrices;
@@ -105,12 +105,12 @@ namespace ComputerTechs
       var eigenvalues = originMatrix.Eigenvalues();
       
       if (eigenvalues.Any(v => v.Im != 0))
-        throw new ArgumentException();
+        throw new ComplexEigenvaluesException("Комплексные собственные значения не поддерживаются.");
       
       const double max = 1.0;
       const double min = 0.0;
       
-      SquareMatrix eigenvectors = new SquareMatrix(originMatrix.Dimension);
+      var eigenvectors = new SquareMatrix(originMatrix.Dimension);
       var identityMatrix = SquareMatrixHelper.GetIdentityMatrix(originMatrix.Dimension);
       
       // Два различных собственных значения.
