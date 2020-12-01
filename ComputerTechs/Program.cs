@@ -1,32 +1,25 @@
-﻿using System;
-using Meta.Numerics.Matrices;
-
 namespace ComputerTechs
 {
+  /// <summary>
+  /// Класс программы.
+  /// </summary>
   internal static class Program
   {
-    public static void Main(string[] args)
+    /// <summary>
+    /// Точка входа в программу.
+    /// </summary>
+    public static void Main()
     {
-      // var entries = new[,]
-      // {
-      //   {25.0, 17.0}, 
-      //   {-5.0, 1.0}
-      // };
-      //
-      // var A = new SquareMatrix(entries);
-      //
-      // var S = A.GetEigenvectors();
-      // // S.Print();
-      // var J = A.GetJordanForm();
-      // // J.Print();
-      // ().Print();
-      // var expJ = J.GetMatrixExponentialFunc()(1.0);
-      // expJ.Print();
-      //
-      // var expM = S * expJ * S.Inverse();
-      // expM.Print();
-    }
+      var entries = new[,]
+      {
+        {1.0, 0.0}, 
+        {0.0, 2.0}
+      };
 
+      var expM = SquareMatrixHelper.ExpM(entries);
+      expM(1.0).Print();
+    }
+    
     /// <summary>
     /// Опорная функция множества.
     /// </summary>
