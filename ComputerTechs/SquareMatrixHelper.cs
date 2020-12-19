@@ -107,6 +107,16 @@ namespace ComputerTechs
   /// </summary>
   public static class VectorHelper
   {
+    public static double Prod(ColumnVector a, ColumnVector b)
+    {
+      if (a.ColumnCount != b.ColumnCount)
+        throw new ArgumentException("Размерности векторов не совпадают.");
+      var sum = 0.0;
+      for (var i = 0; i < a.ColumnCount; i++)
+        sum += a[i] * b[i];
+      return sum;
+    }
+    
     /// <summary>
     /// Проверить равен ли вектор нулевому вектору.
     /// </summary>

@@ -68,16 +68,17 @@ namespace ComputerTechs
     /// <param name="n">Количество разбиений отрезка.</param>
     /// <param name="integrationMethod">Метод интегрирования.</param>
     /// <returns>Результат интегрирования.</returns>
-    public static double Integrate(Func<double, double> func, Boundaries boundaries, IntegrationMethod integrationMethod)
+    public static double Integrate(Func<double, object[], double> func, object[] args, 
+      Boundaries boundaries, IntegrationMethod integrationMethod)
     {
       double result;
       switch (integrationMethod)
       {
         case IntegrationMethod.Rectangles:
-          result = RectangleIntegration(func, boundaries);
+          result = RectangleIntegration(func, args, boundaries);
           break;
         case IntegrationMethod.Trapezium:
-          result = TrapeziumIntegration(func, boundaries);
+          result = TrapeziumIntegration(func, args, boundaries);
           break;
         default:
           result = double.MinValue;
@@ -93,14 +94,14 @@ namespace ComputerTechs
     /// <param name="func">Функция интегрирования.</param>
     /// <param name="boundaries">Отрезок интегрирования.</param>
     /// <returns>Результат интегрирования.</returns>
-    private static double RectangleIntegration(Func<double, double> func, Boundaries boundaries)
+    private static double RectangleIntegration(Func<double, object[], double> func, object[] args, Boundaries boundaries)
     {
       var result = 0.0;
 
       var t = boundaries.Left;
       for (var i = 0; i < boundaries.N; i++)
       {
-        result += func(t) * boundaries.Step;
+        result += func(t, args) * boundaries.Step;
         t += boundaries.Step;
       }
 
@@ -114,7 +115,7 @@ namespace ComputerTechs
     /// <param name="boundaries">Отрезок интегрирования.</param>
     /// <returns>Результат интегрирования.</returns>
     /// <exception cref="NotImplementedException"></exception>
-    private static double TrapeziumIntegration(Func<double, double> func, Boundaries boundaries)
+    private static double TrapeziumIntegration(Func<double, object[], double> func, object[] args, Boundaries boundaries)
     {
      throw new NotImplementedException();
     }

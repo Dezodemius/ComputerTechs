@@ -10,6 +10,15 @@ namespace ComputerTechs
   /// </summary>
   public static class SquareMatrixExtensions
   {
+    public static double Det(this SquareMatrix matrix)
+    { 
+      var a = matrix[0, 0];
+      var b = matrix[0, 1];
+      var c = matrix[1, 0];
+      var d = matrix[1, 1];
+      return a * d - b * c;
+    }
+    
     /// <summary>
     /// Вывести все значения матрицы в окно консоли.
     /// </summary>
@@ -144,9 +153,10 @@ namespace ComputerTechs
       var b = matrix[0, 1];
       var c = matrix[1, 0];
       var d = matrix[1, 1];
-      var det = a * d - b * c;
 
-      return (1 / det) * new SquareMatrix(new[,] {{d, -b}, {-c, a}});
+      var det = matrix.Det();
+      
+      return 1 / det * new SquareMatrix(new[,] {{d, -b}, {-c, a}});
     }
     
     /// <summary>
