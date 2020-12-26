@@ -8,10 +8,13 @@ else:
 
 if path != "":
     f = open(path, "r")
-    data = f.read()
+    lines = f.readlines()
+    result = [[], []]
+    for i in range(2):
+        for x in lines:
+            result[i].append(float(x.replace('\n', '').replace(',', '.').split()[i]))
     f.close()
-    
-    data = [float(x) for x in data.replace(",", ".").split()]
-    
-    plt.plot(data)
-    plt.show()
+
+    plt.scatter(result[0], result[1], color='black')
+    plt.savefig("d:\pics\{}.png".format(sys.argv[2]))
+    #plt.show()
