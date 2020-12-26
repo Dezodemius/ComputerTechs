@@ -109,10 +109,10 @@ namespace ComputerTechs
       {
         while (true)
         {
-          var possibleAttachedVectorEntries = GetRandomColumnVector(max, min);
-          var possibleAttachedVector = new ColumnVector(possibleAttachedVectorEntries);
           if ((originMatrix - eigenvalues[1].Re * identityMatrix).GetRank() != 0)
           {
+            var possibleAttachedVectorEntries = GetRandomColumnVector(max, min);
+            var possibleAttachedVector = new ColumnVector(possibleAttachedVectorEntries);
             var possibleEigenvector = (originMatrix - eigenvalues[1].Re * identityMatrix) * possibleAttachedVector;
             
             if (originMatrix * possibleAttachedVector == eigenvalues[1].Re * possibleAttachedVector)

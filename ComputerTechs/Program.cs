@@ -1,14 +1,14 @@
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
-using System.Runtime.Serialization;
-using System.Threading;
+using System.Linq;
 using System.Windows.Forms.DataVisualization.Charting;
 using CenterSpace.NMath.Charting.Microsoft;
 using CenterSpace.NMath.Core;
+using CommandLine;
+using CommandLine.Text;
 using Meta.Numerics.Matrices;
 using static System.Math;
 
@@ -29,31 +29,59 @@ namespace ComputerTechs
     /// </summary>
     private const string PlotScriptFilePath = "..\\..\\..\\Plotter\\Plotter.py";
 
+    private static CommandLineOptions commandLineOptions;
+    
     /// <summary>
     /// Точка входа в программу.
     /// </summary>
     /// <param name="args">Аргументы командной строки.</param>
     public static void Main(string[] args)
-    {
-      var entries = new[,]
+    {  
+      if (args.Length == 0)
       {
-        {1.0, 6.0}, 
-        {0.0, 2.0}
-      };
+        Console.WriteLine("Run application with --help");
+        Environment.Exit(-1);
+      }
 
-      var matrix = new SquareMatrix(entries);
-      var x0 = new ColumnVector(1.0, 0.0);
-      const double t0 = 0.0;
-      const double t1 = 1.0;
-      const int n = 1000;
+      var parser = new Parser(with => with.HelpWriter = null);
+      var parserResult = parser.ParseArguments<CommandLineOptions>(args);
+      parserResult
+        .WithParsed(options => commandLineOptions = options)
+        .WithNotParsed(errs => DisplayHelp(parserResult));
 
-      const int m = 24;
-      const double dt = (t1 - t0) / m;
+      if (args.Any(a => a.Contains("help") || a.Contains("--version")))
+        Environment.Exit(-1);
+
+      Console.WriteLine("#### Program started ####\n");
+      var matrix =  SquareMatrixHelper.SquareMatrix(commandLineOptions.SquareMatrixEntries.ToArray());
+
+      var x0 = new ColumnVector(commandLineOptions.InitVector.ToArray());
+      var t0 = commandLineOptions.InitTime.ToList()[0];
+      var t1 = commandLineOptions.InitTime.ToList()[1];
+      var n = commandLineOptions.N;
+
+      var frames = commandLineOptions.Frames;
+      var dt = (t1 - t0) / frames;
       
-      PlotByNMath(m, matrix, x0, n, t0, dt);
-      PlotByPython(m, matrix, x0, n, t0, dt);
+      PlotByNMath(frames, matrix, x0, n, t0, dt);
+      // PlotByPython(frames, matrix, x0, n, t0, dt);
+      Console.WriteLine("#### Program finished ####");
     }
 
+    static void DisplayHelp<T>(ParserResult<T> result)
+    {  
+      var helpText = HelpText.AutoBuild(result, h =>
+      {
+        h.AdditionalNewLineAfterOption = false;
+        h.Heading = "ComputerTechs 1.0.0";
+        h.Copyright = "Gladkov Yegor (c) 2020";
+        h.AutoHelp = true;
+        h.AutoVersion = true;
+        return HelpText.DefaultParsingErrorsHandler(result, h);
+      }, e => e);
+      Console.WriteLine(helpText);
+    }
+    
     /// <summary>
     /// Построить графики с помощью Python.
     /// </summary>
@@ -88,19 +116,22 @@ namespace ComputerTechs
     /// <param name="dt">Шаг по времени.</param>
     private static void PlotByNMath(int m, SquareMatrix matrix, ColumnVector x0, int n, double t0, double dt)
     {
-      var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\pics");
+      var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, commandLineOptions.PicsPath);
       if (!Directory.Exists(path))
         Directory.CreateDirectory(path);
       const ChartImageFormat format = ChartImageFormat.Png;
 
       for (var i = 0; i < m; i++)
       {
+        Console.Write($"Plotting {i}-th frame . . . ");
         CalculateSupportingFunctionOfReachableSet(matrix, x0, n, t0, t0 + dt * i,
           x => new ColumnVector(Cos(x), Sin(x)), out var psi, out var supportingFunctionOfReachableSet);
         CalculatePointsForPlot(n, psi, supportingFunctionOfReachableSet, out var data);
 
         var chart = NMathChart.ToChart(new FloatMatrix(data), 0, 1);
+        chart.Size = new Size(3840, 2160);
         NMathChart.Save(chart, $@"{path}\{i}.{format}", format);
+        Console.WriteLine($"{i}-th frame saved\n");
       }
     }
 

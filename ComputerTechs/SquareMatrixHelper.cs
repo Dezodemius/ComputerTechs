@@ -63,7 +63,7 @@ namespace ComputerTechs
       
       return t => { return new SquareMatrix(new [,]
         {
-          { Math.Exp(l1 * t), (t - 1) * Math.Exp(l1 * t) }, 
+          { Math.Exp(l1 * t), t * Math.Exp(l1 * t) }, 
           { 0.0, Math.Exp(l1 * t) }
         });
       }; 

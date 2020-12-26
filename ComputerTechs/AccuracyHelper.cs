@@ -23,7 +23,7 @@ namespace ComputerTechs
     /// <returns><c>True</c>, если указанное число меньше <c>eps</c>.</returns>
     public static bool IsZero(this double number, double eps)
     {
-      return Math.Abs(number - 0.0) <= eps;
+      return Math.Abs(number) <= eps;
     }
 
     /// <summary>
