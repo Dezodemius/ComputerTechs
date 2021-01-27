@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms.DataVisualization.Charting;
@@ -77,6 +78,7 @@ namespace ComputerTechs
         h.Copyright = "Gladkov Yegor (c) 2020";
         h.AutoHelp = true;
         h.AutoVersion = true;
+        h.AddPostOptionsLine("В списках разделителем выступаем ','.");
         return HelpText.DefaultParsingErrorsHandler(result, h);
       }, e => e);
       Console.WriteLine(helpText);
